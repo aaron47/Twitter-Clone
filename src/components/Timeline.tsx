@@ -212,10 +212,10 @@ const Timeline: React.FC<TimelineProps> = ({ where = {} }) => {
 
   return (
     <Container>
-      <div>
+      <div className="absolute top-0 left-0 p-4">
         <button
           onClick={() => signOut()}
-          className="rounded-md bg-primary px-4 py-2 text-white"
+          className="focus:shadow-outline rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700 focus:outline-none"
         >
           Sign Out
         </button>

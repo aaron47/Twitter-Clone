@@ -45,13 +45,14 @@ const CreateTweet = () => {
       >
         <textarea
           onChange={(e) => setTweet(e.target.value)}
-          className="w-full p-4 shadow"
+          placeholder="Que'ce qui se passe?"
+          className="w-full p-4 shadow-md rounded-md resize-none outline-blue-500"
         />
 
         <div className="mt-4 flex justify-end">
           <button
             type="submit"
-            className="rounded-md bg-primary px-4 py-2 text-white"
+            className="focus:shadow-outline rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700 focus:outline-none"
           >
             Tweet
           </button>
