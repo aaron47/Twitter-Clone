@@ -166,7 +166,7 @@ const Tweet: React.FC<TweetProps> = ({ tweet, queryClient, input }) => {
 
       <div className="mt-4 flex items-center p-2">
         <AiFillHeart
-          color={hasLiked ? "red" : "gray"}
+          // color={hasLiked ? "red" : "gray"}
           size="1.5rem"
           onClick={() => {
             if (hasLiked) {
@@ -175,6 +175,7 @@ const Tweet: React.FC<TweetProps> = ({ tweet, queryClient, input }) => {
             }
             likeTweet({ tweetId: tweet.id });
           }}
+          className={`cursor-pointer hover:text-red-500 ${hasLiked ? "text-red-500" : "text-gray-500"} transition duration-150 ease-in-out` }
         />
 
         <span className="text-sm text-gray-500">{tweet._count.likes}</span>

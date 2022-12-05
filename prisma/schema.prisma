@@ -41,6 +41,14 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -51,14 +59,6 @@ model User {
   sessions      Session[]
   tweet         Tweet[]
   likes         Like[]
-}
-
-model VerificationToken {
-  identifier String
-  token      String   @unique
-  expires    DateTime
-
-  @@unique([identifier, token])
 }
 
 model Tweet {
