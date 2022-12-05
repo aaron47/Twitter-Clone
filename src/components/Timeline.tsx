@@ -237,7 +237,7 @@ const Timeline: React.FC<TimelineProps> = ({ where = {} }) => {
         ))}
 
         {!hasNextPage && (
-          <p>There are no more tweets to be loaded currently...</p>
+          <p>Il n'ya pas des tweets a vous faire voir a ce moment...</p>
         )}
 
         {/* <button
