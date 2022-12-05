@@ -15,7 +15,7 @@ const UserPage = () => {
         }}
       />
 
-      <div className="absolute top-0 right-0 p-4">
+      <div className="fixed top-0 right-0 p-4">
         <button
           onClick={() => router.push("/")}
           className="focus:shadow-outline rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700 focus:outline-none"
