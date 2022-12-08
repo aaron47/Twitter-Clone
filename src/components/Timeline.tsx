@@ -6,7 +6,7 @@ import CreateTweet from "./CreateTweet";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 
-import { AiFillHeart } from "react-icons/ai";
+import { AiFillHeart, AiOutlineClose } from "react-icons/ai";
 import {
   InfiniteData,
   QueryClient,
@@ -14,8 +14,9 @@ import {
 } from "@tanstack/react-query";
 
 import Link from "next/link";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Container from "./Container";
+import { CacheProps } from "../utils/types";
 
 const LIMIT = 10;
 
@@ -66,17 +67,7 @@ function updateCache({
   data,
   action,
   input,
-}: {
-  queryClient: QueryClient;
-  variables: {
-    tweetId: string;
-  };
-  data: {
-    userId: string;
-  };
-  action: "like" | "unlike";
-  input: RouterInputs["tweet"]["timeline"];
-}) {
+}: CacheProps) {
   queryClient.setQueryData(
     [
       ["tweet", "timeline"],
@@ -93,12 +84,19 @@ function updateCache({
       const value = action === "like" ? 1 : -1;
 
       const newTweets = newData.pages.map((page) => {
+        if (action === "delete") {
+          return {
+            tweets: page.tweets.filter(
+              (tweet) => tweet.id !== variables.tweetId
+            ),
+          };
+        }
         return {
           tweets: page.tweets.map((tweet) => {
             if (tweet.id === variables.tweetId) {
               return {
                 ...tweet,
-                likes: action === "like" ? [data.userId] : [],
+                likes: action === "like" ? [data!.userId] : [],
                 _count: {
                   likes: tweet._count.likes + value,
                 },
@@ -136,10 +134,17 @@ const Tweet: React.FC<TweetProps> = ({ tweet, queryClient, input }) => {
     },
   }).mutateAsync;
 
+  const deleteTweet = trpc.tweet.delete.useMutation({
+    onSuccess: (_, variables) => {
+      updateCache({ queryClient, variables, action: "delete", input });
+    },
+  }).mutateAsync;
+
   const hasLiked = tweet.likes.length > 0;
+  const { data: session } = useSession();
 
   return (
-    <div className="mb-4 border-b-2 border-gray-500">
+    <div className="relative mb-4 border-b-2 border-gray-500">
       <div className="flex p-2">
         <Image
           src={tweet.author.image!}
@@ -158,6 +163,14 @@ const Tweet: React.FC<TweetProps> = ({ tweet, queryClient, input }) => {
               {" "}
               - {dayjs(tweet.createdAt).fromNow()}
             </p>
+            {session?.user?.id === tweet.authorId && (
+              <button
+                onClick={() => deleteTweet({ tweetId: tweet.id })}
+                className="absolute top-2 right-2 rounded-full bg-red-500 p-2 text-white transition duration-150 ease-in-out hover:bg-red-700"
+              >
+                <AiOutlineClose />
+              </button>
+            )}
           </div>
 
           <div>{tweet.text}</div>
@@ -175,7 +188,9 @@ const Tweet: React.FC<TweetProps> = ({ tweet, queryClient, input }) => {
             }
             likeTweet({ tweetId: tweet.id });
           }}
-          className={`cursor-pointer hover:text-red-500 ${hasLiked ? "text-red-500" : "text-gray-500"} transition duration-150 ease-in-out` }
+          className={`cursor-pointer hover:text-red-500 ${
+            hasLiked ? "text-red-500" : "text-gray-500"
+          } transition duration-150 ease-in-out`}
         />
 
         <span className="text-sm text-gray-500">{tweet._count.likes}</span>

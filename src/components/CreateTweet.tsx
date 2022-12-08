@@ -29,7 +29,10 @@ const CreateTweet = () => {
     try {
       tweetSchema.parse({ text: tweet });
     } catch (e: any) {
-      setError(e);
+      setError(e["errors"][0].message);
+      setInterval(() => {
+        setError("");
+      }, 6000);
       return;
     }
 
@@ -38,7 +41,7 @@ const CreateTweet = () => {
 
   return (
     <>
-      {error && JSON.stringify(error)}
+      {error && <p className="p-4 text-xl italic text-red-500">{error}</p>}
       <form
         onSubmit={(e) => handleSubmit(e)}
         className="mb-4 flex w-full flex-col rounded-md border-2 p-4"
@@ -46,7 +49,7 @@ const CreateTweet = () => {
         <textarea
           onChange={(e) => setTweet(e.target.value)}
           placeholder="Que'ce qui se passe?"
-          className="w-full p-4 shadow-md rounded-md resize-none outline-blue-500"
+          className="w-full resize-none rounded-md p-4 shadow-md outline-blue-500"
         />
 
         <div className="mt-4 flex justify-end">

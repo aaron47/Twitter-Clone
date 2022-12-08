@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { protectedProcedure, publicProcedure } from "./../trpc";
 import { router } from "../trpc";
 import { tweetSchema } from "../../../components/CreateTweet";
@@ -135,6 +136,35 @@ export const tweetRouter = router({
             tweetId: input.tweetId,
             userId,
           },
+        },
+      });
+    }),
+  delete: protectedProcedure
+    .input(
+      z.object({
+        tweetId: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { prisma } = ctx;
+      const { tweetId } = input;
+
+      const tweet = await prisma.tweet.findUnique({
+        where: {
+          id: tweetId,
+        },
+      });
+
+      if (!tweet) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Tweet not found",
+        });
+      }
+
+      return prisma.tweet.delete({
+        where: {
+          id: input.tweetId,
         },
       });
     }),
