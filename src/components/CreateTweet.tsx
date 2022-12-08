@@ -1,15 +1,6 @@
 import { FormEvent, useState } from "react";
 import { trpc } from "../utils/trpc";
-import { z } from "zod";
-
-export const tweetSchema = z.object({
-  text: z
-    .string({
-      required_error: "Tweet text is required",
-    })
-    .min(10)
-    .max(280),
-});
+import { tweetSchema } from "../utils/types";
 
 const CreateTweet = () => {
   const [tweet, setTweet] = useState("");
@@ -17,7 +8,6 @@ const CreateTweet = () => {
 
   const { mutateAsync } = trpc.tweet.createTweet.useMutation({
     onSuccess: () => {
-      setTweet("");
       utils.tweet.timeline.invalidate();
     },
   });
@@ -37,6 +27,7 @@ const CreateTweet = () => {
     }
 
     mutateAsync({ text: tweet });
+    e.currentTarget.reset();
   };
 
   return (

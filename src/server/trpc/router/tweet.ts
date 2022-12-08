@@ -1,8 +1,9 @@
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, publicProcedure } from "./../trpc";
 import { router } from "../trpc";
-import { tweetSchema } from "../../../components/CreateTweet";
+
 import { z } from "zod";
+import { tweetSchema } from "../../../utils/types";
 
 export const tweetRouter = router({
   createTweet: protectedProcedure
